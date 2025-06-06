@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.HuodongbaomingDao">
+
+
+
+
+
+
+
+
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.huodongfabu_id as huodongfabuId
+        ,a.xuesheng_id as xueshengId
+        ,a.huodongbaoming_xingqu as huodongbaomingXingqu
+        ,a.huodongbaoming_yixiang as huodongbaomingYixiang
+        ,a.huodongbaoming_yesno_types as huodongbaomingYesnoTypes
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.HuodongbaomingView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,huodongfabu.huodongfabu_name as huodongfabuName
+        ,huodongfabu.huodongfabu_types as huodongfabuTypes
+        ,huodongfabu.huodongfabu_photo as huodongfabuPhoto
+        ,huodongfabu.huodongfabu_content as huodongfabuContent
+        ,xuesheng.xuesheng_name as xueshengName
+        ,xuesheng.xuesheng_id_number as xueshengIdNumber
+        ,xuesheng.xuesheng_phone as xueshengPhone
+        ,xuesheng.xuesheng_nianji as xueshengNianji
+        ,xuesheng.xuesheng_photo as xueshengPhoto
+        ,xuesheng.username as username
+
+        FROM huodongbaoming  a
+        left JOIN huodongfabu huodongfabu ON a.huodongfabu_id = huodongfabu.id
+        left JOIN xuesheng xuesheng ON a.xuesheng_id = xuesheng.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.huodongfabuId != null and params.huodongfabuId != ''">
+                and a.huodongfabu_id = #{params.huodongfabuId}
+            </if>
+            <if test="params.xueshengId != null and params.xueshengId != ''">
+                and a.xuesheng_id = #{params.xueshengId}
+            </if>
+            <if test=" params.huodongbaomingXingqu != '' and params.huodongbaomingXingqu != null and params.huodongbaomingXingqu != 'null' ">
+                and a.huodongbaoming_xingqu like CONCAT('%',#{params.huodongbaomingXingqu},'%')
+            </if>
+            <if test=" params.huodongbaomingYixiang != '' and params.huodongbaomingYixiang != null and params.huodongbaomingYixiang != 'null' ">
+                and a.huodongbaoming_yixiang like CONCAT('%',#{params.huodongbaomingYixiang},'%')
+            </if>
+            <if test="params.huodongbaomingYesnoTypes != null and params.huodongbaomingYesnoTypes != ''">
+                and a.huodongbaoming_yesno_types = #{params.huodongbaomingYesnoTypes}
+            </if>
+
+                <!-- 判断活动发布的id不为空 -->
+            <if test=" params.huodongfabuIdNotNull != '' and params.huodongfabuIdNotNull != null and params.huodongfabuIdNotNull != 'null' ">
+                and a.huodongfabu_id IS NOT NULL
+            </if>
+            <if test=" params.huodongfabuName != '' and params.huodongfabuName != null and params.huodongfabuName != 'null' ">
+                and huodongfabu.huodongfabu_name like CONCAT('%',#{params.huodongfabuName},'%')
+            </if>
+            <if test="params.huodongfabuTypes != null  and params.huodongfabuTypes != ''">
+                and huodongfabu.huodongfabu_types = #{params.huodongfabuTypes}
+            </if>
+
+            <if test=" params.huodongfabuContent != '' and params.huodongfabuContent != null and params.huodongfabuContent != 'null' ">
+                and huodongfabu.huodongfabu_content like CONCAT('%',#{params.huodongfabuContent},'%')
+            </if>
+                <!-- 判断学生的id不为空 -->
+            <if test=" params.xueshengIdNotNull != '' and params.xueshengIdNotNull != null and params.xueshengIdNotNull != 'null' ">
+                and a.xuesheng_id IS NOT NULL
+            </if>
+            <if test=" params.xueshengName != '' and params.xueshengName != null and params.xueshengName != 'null' ">
+                and xuesheng.xuesheng_name like CONCAT('%',#{params.xueshengName},'%')
+            </if>
+            <if test=" params.xueshengIdNumber != '' and params.xueshengIdNumber != null and params.xueshengIdNumber != 'null' ">
+                and xuesheng.xuesheng_id_number like CONCAT('%',#{params.xueshengIdNumber},'%')
+            </if>
+            <if test=" params.xueshengPhone != '' and params.xueshengPhone != null and params.xueshengPhone != 'null' ">
+                and xuesheng.xuesheng_phone like CONCAT('%',#{params.xueshengPhone},'%')
+            </if>
+            <if test=" params.xueshengNianji != '' and params.xueshengNianji != null and params.xueshengNianji != 'null' ">
+                and xuesheng.xuesheng_nianji like CONCAT('%',#{params.xueshengNianji},'%')
+            </if>
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>

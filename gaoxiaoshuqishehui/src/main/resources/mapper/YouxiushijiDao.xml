@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.YouxiushijiDao">
+
+
+
+
+
+
+
+
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.youxiushiji_name as youxiushijiName
+        ,a.youxiushiji_renwu as youxiushijiRenwu
+        ,a.youxiushiji_types as youxiushijiTypes
+        ,a.youxiushiji_photo as youxiushijiPhoto
+        ,a.youxiushiji_content as youxiushijiContent
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.YouxiushijiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+
+        FROM youxiushiji  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.youxiushijiName != '' and params.youxiushijiName != null and params.youxiushijiName != 'null' ">
+                and a.youxiushiji_name like CONCAT('%',#{params.youxiushijiName},'%')
+            </if>
+            <if test=" params.youxiushijiRenwu != '' and params.youxiushijiRenwu != null and params.youxiushijiRenwu != 'null' ">
+                and a.youxiushiji_renwu like CONCAT('%',#{params.youxiushijiRenwu},'%')
+            </if>
+            <if test="params.youxiushijiTypes != null and params.youxiushijiTypes != ''">
+                and a.youxiushiji_types = #{params.youxiushijiTypes}
+            </if>
+            <if test=" params.youxiushijiContent != '' and params.youxiushijiContent != null and params.youxiushijiContent != 'null' ">
+                and a.youxiushiji_content like CONCAT('%',#{params.youxiushijiContent},'%')
+            </if>
+
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>
